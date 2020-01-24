@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <RootNamespace>RFI</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <Version>1.1.13</Version>
+    <Company>RFI Bank</Company>
+    <Authors>Golinski Alexey</Authors>
+    <Product>MicroserviceFramework</Product>
+    <StartupObject></StartupObject>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <PackageId>MicroserviceFramework</PackageId>
+    <AssemblyName>MicroserviceFramework</AssemblyName>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageTags>microservice framework, api</PackageTags>
+    <Description>The fast creation of microservices on the DevOps infrastructure of the RFI Bank.</Description>
+    <RepositoryUrl />
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.60" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="VaultSharp" Version="0.11.1002" />
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+</Project>
