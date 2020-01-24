@@ -1,0 +1,21 @@
+image: dist.hosts.rfi:5000/dind:kub
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  
+services:
+- name: docker:dind
+  command: ["--insecure-registry=dist.hosts.rfi:5000"]
+
+before_script:
+- docker info
+
+stages:
+  - build
+  - deploy-nuget
+
+build_job:
+  stage: build
+  script:
+    - env
+    - ansible-playbook ./ci.yml -t build -e "project_dir=$CI_PROJECT_DIR project=$CI_PROJECT_NAME tag=$CI_PIPELINE_ID"

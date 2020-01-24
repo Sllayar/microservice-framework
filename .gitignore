@@ -1,0 +1,9 @@
+bin
+obj
+.vs
+.vscode
+proceficator/Properties/launchSettings.json
+microservice-framework-tests/Properties/launchSettings.json
+microservice-framework/.config/dotnet-tools.json
+microservice-framework/GlobalSuppressions.cs
+microservice-framework/Properties/launchSettings.json
