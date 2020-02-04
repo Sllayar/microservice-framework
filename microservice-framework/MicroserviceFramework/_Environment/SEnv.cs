@@ -5,7 +5,7 @@ namespace RFI.MicroserviceFramework._Environment
 {
     public static class SEnv
     {
-        public static void Init()
+        static SEnv()
         {
             try
             {
