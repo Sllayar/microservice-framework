@@ -15,15 +15,15 @@ namespace RFI.MicroserviceFramework
         {
             Settings = settings;
 
-            SEnv.Init(settings.IsDebug);
+            SEnv.Init(Settings.IsDebug);
 
-            Host.CreateDefaultBuilder(settings.Args).ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>()).Build().Run();
+            Settings.Host.ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>()).Build().Run();
         }
     }
 
     public class MicroserviceFrameworkSettings
     {
-        public string[] Args { get; set; }
+        public IHostBuilder Host { get; set; }
 
         public bool IsDebug { get; set; }
 
