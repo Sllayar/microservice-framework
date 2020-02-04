@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using RFI.MicroserviceFramework._Loggers;
 
 namespace RFI.MicroserviceFramework._Environment
@@ -23,19 +25,19 @@ namespace RFI.MicroserviceFramework._Environment
 
         public static string EnvironmentName => Get("ASPNETCORE_ENVIRONMENT");
 
-        public static readonly bool IsDebug = System.Diagnostics.Debugger.IsAttached;
+        public static readonly bool IsDebug = Debugger.IsAttached || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.StartsWith("xunit"));
 
-        public static string Hostname => SEnv.Get("HOSTNAME") ?? "Hostname not set";
+        public static string Hostname => Get("HOSTNAME") ?? "Hostname not set";
 
-        public static string SsoKeyPublic => SEnv.Get("SSO_KEY_PUBLIC");
+        public static string SsoKeyPublic => Get("SSO_KEY_PUBLIC");
 
-        public static string RfiKeyPrivate => SEnv.Get("RFI_KEY_PRIVATE");
+        public static string RfiKeyPrivate => Get("RFI_KEY_PRIVATE");
 
-        public static string RfiKeyPublic => SEnv.Get("RFI_KEY_PUBLIC");
+        public static string RfiKeyPublic => Get("RFI_KEY_PUBLIC");
 
-        public static string OracleCS => SEnv.Get("ORACLE_CS");
+        public static string OracleCS => Get("ORACLE_CS");
 
 
-        public static bool IsDevelopment => SEnv.EnvironmentName == "Development";
+        public static bool IsDevelopment => EnvironmentName == "Development";
     }
 }
