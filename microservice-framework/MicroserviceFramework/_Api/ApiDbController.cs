@@ -35,7 +35,7 @@ namespace RFI.MicroserviceFramework._Api
 
         public static List<T> ExecSelect<T>(string tableName, bool usePackage, object request) where T : new()
         {
-            var parametersString = GetParams(request).Cast<object>().Aggregate("", (current, value) => current + value switch
+            var parametersString = GetParams(request).Select(i => i.Value).Aggregate("", (current, value) => current + value switch
             {
                 null => "'', ",
                 string _ => $"'{value}', ",
@@ -74,7 +74,9 @@ namespace RFI.MicroserviceFramework._Api
 
                                 var value = reader.GetValue(reader.GetOrdinal(propertyInfo.Name.ToUpper())).ToString();
 
-                                /*switch(propertyTypeName)
+                                object obj;
+
+                                switch(propertyTypeName)
                                 {
                                     case "String":
                                         obj = value;
@@ -102,19 +104,7 @@ namespace RFI.MicroserviceFramework._Api
                                         break;
                                     default:
                                         throw new ApiException("Unknown param type");
-                                }*/
-
-                                var obj = propertyTypeName switch
-                                {
-                                    "String" => (object)value,
-                                    "Boolean" => bool.Parse(value),
-                                    "Int32" => int.Parse(value),
-                                    "Int64" => int.Parse(value),
-                                    "Long" => long.Parse(value),
-                                    "Decimal" => decimal.Parse(value.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                    "DateTime" => DateTime.Parse(value),
-                                    _ => throw new ApiException("Unknown param type")
-                                };
+                                }
 
                                 propertyInfo.SetValue(outParams, obj);
                             }
