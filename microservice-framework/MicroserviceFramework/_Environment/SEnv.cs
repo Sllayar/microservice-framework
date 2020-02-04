@@ -5,12 +5,10 @@ namespace RFI.MicroserviceFramework._Environment
 {
     public static class SEnv
     {
-        public static void Init(bool isDebug)
+        public static void Init()
         {
             try
             {
-                IsDebug = isDebug;
-
                 Vault.Init();
             }
             catch(Exception ex)
@@ -25,6 +23,6 @@ namespace RFI.MicroserviceFramework._Environment
 
         public static string EnvironmentName => Get("ASPNETCORE_ENVIRONMENT");
 
-        public static bool IsDebug { get; private set; }
+        public static readonly bool IsDebug = System.Diagnostics.Debugger.IsAttached;
     }
 }
