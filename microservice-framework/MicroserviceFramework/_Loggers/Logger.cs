@@ -28,11 +28,15 @@ namespace RFI.MicroserviceFramework._Loggers
             {
                 var exception = ex.InnerException ?? ex;
 
-                var exMessageAndStack = new List<string>();
+                /*var exMessageAndStack = new List<string>();
                 if(exception.Message.NotEmpty()) exMessageAndStack.AddRange(exception.Message.Split(Environment.NewLine));
-                if(exception.StackTrace.NotEmpty()) exMessageAndStack.AddRange(exception.StackTrace.Split(Environment.NewLine));
+                if(exception.StackTrace.NotEmpty()) exMessageAndStack.AddRange(exception.StackTrace.Split(Environment.NewLine));*/
 
-                WriteLine(LogLevel.Exception, message, exMessageAndStack, methodName, filePath);
+                var exMessageAndStack = "";
+                if(exception.Message.NotEmpty()) exMessageAndStack += "Message: " + exception.Message;
+                if(exception.StackTrace.NotEmpty()) exMessageAndStack += " Stack: " + exception.StackTrace.Split(Environment.NewLine);
+
+                WriteLine(LogLevel.Exception, exMessageAndStack, null, methodName, filePath);
 
                 SMetrics.CounterExceptions.Inc(exception.GetType().Name);
             }
