@@ -24,15 +24,22 @@ namespace RFI.MicroserviceFramework._Loggers
 
         public static void Log(this Exception ex, string message = null, [CallerMemberName] string methodName = "", [CallerFilePath] string filePath = null)
         {
-            var exception = ex.InnerException ?? ex;
+            try
+            {
+                var exception = ex.InnerException ?? ex;
 
-            var exMessageAndStack = new List<string>();
-            if(exception.Message.NotEmpty()) exMessageAndStack.AddRange(exception.Message.Split(Environment.NewLine));
-            if(exception.StackTrace.NotEmpty()) exMessageAndStack.AddRange(exception.StackTrace.Split(Environment.NewLine));
+                var exMessageAndStack = new List<string>();
+                if(exception.Message.NotEmpty()) exMessageAndStack.AddRange(exception.Message.Split(Environment.NewLine));
+                if(exception.StackTrace.NotEmpty()) exMessageAndStack.AddRange(exception.StackTrace.Split(Environment.NewLine));
 
-            WriteLine(LogLevel.Exception, message, exMessageAndStack, methodName, filePath);
+                WriteLine(LogLevel.Exception, message, exMessageAndStack, methodName, filePath);
 
-            SMetrics.CounterExceptions.Inc(exception.GetType().Name);
+                SMetrics.CounterExceptions.Inc(exception.GetType().Name);
+            }
+            catch(Exception e)
+            {
+                WriteLine(LogLevel.Exception, "ex.Log exception", e.Message, methodName, filePath);
+            }
         }
 
         private static void WriteLine(LogLevel level, string logMessage, object logExtra, string methodName, string filePath)
