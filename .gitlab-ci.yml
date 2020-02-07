@@ -12,10 +12,15 @@ before_script:
 
 stages:
   - build
-  - deploy-nuget
+  - deploy
 
-build_job:
+build:
   stage: build
   script:
-    - env
-    - ansible-playbook ./ci.yml -t build -e "project_dir=$CI_PROJECT_DIR project=$CI_PROJECT_NAME tag=$CI_PIPELINE_ID"
+    - sh .ci-docker-build.sh $CI_JOB_STAGE $CI_PROJECT_NAME $CI_PROJECT_DIR $CI_PIPELINE_ID
+
+deploy:
+  stage: deploy
+  script:
+    - sh .ci-docker-build.sh $CI_JOB_STAGE $CI_PROJECT_NAME $CI_PROJECT_DIR $CI_PIPELINE_ID
+    
