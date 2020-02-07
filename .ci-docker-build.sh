@@ -33,9 +33,6 @@ RUN dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.nupkg --source http://d
 docker pull dist.hosts.rfi:5000/${PROJECT_NAME}:builder || true
 docker build /${PROJECT_DIR} --cache-from dist.hosts.rfi:5000/${PROJECT_NAME}:builder
 
-fi
-docker push dist.hosts.rfi:5000/${PROJECT_NAME}:builder || exit 1
-
 
 elif [[ $JOB_STAGE == "deploy-production" ]]; then
 
