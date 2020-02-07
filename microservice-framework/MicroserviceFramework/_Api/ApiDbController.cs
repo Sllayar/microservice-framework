@@ -167,16 +167,34 @@ namespace RFI.MicroserviceFramework._Api
             {
                 var prmStr = cmd.Parameters[propertyInfo.Name].Value.ToString();
 
-                var obj = response.GetPropValue(propertyInfo.Name) switch
+                object obj;
+                switch(response.GetPropValue(propertyInfo.Name))
                 {
-                    null => (object)(prmStr == "null" ? "" : prmStr),
-                    string _ => (prmStr == "null" ? "" : prmStr),
-                    int _ => int.Parse(prmStr),
-                    long _ => long.Parse(prmStr),
-                    decimal _ => decimal.Parse(prmStr.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                    DateTime _ => DateTime.Parse(prmStr),
-                    _ => throw new ApiException("Unknown param type")
-                };
+                    case null:
+                        obj = prmStr == "null" ? "" : prmStr;
+                        break;
+                    case string _:
+                        obj = prmStr == "null" ? "" : prmStr;
+                        break;
+                    case int _:
+                        int.TryParse(prmStr, out var resultInt);
+                        obj = resultInt;
+                        break;
+                    case long _:
+                        long.TryParse(prmStr, out var resultLong);
+                        obj = resultLong;
+                        break;
+                    case decimal _:
+                        decimal.TryParse(prmStr.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
+                        obj = resultDecimal;
+                        break;
+                    case DateTime _:
+                        DateTime.TryParse(prmStr, out var resultDateTime);
+                        obj = resultDateTime;
+                        break;
+                    default:
+                        throw new ApiException("Unknown param type");
+                }
 
                 propertyInfo.SetValue(response, obj);
             }
