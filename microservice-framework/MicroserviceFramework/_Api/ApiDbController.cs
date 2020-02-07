@@ -35,7 +35,9 @@ namespace RFI.MicroserviceFramework._Api
 
         public static List<T> ExecSelect<T>(string tableName, bool usePackage, object request) where T : new()
         {
-            var parametersString = GetParams(request).Cast<object>().Aggregate("", (current, value) => current + value switch
+            var commandDebug = (usePackage ? PackageName + "." : "") + tableName;
+
+            var parametersString = GetParams(request).Select(i => i.Value).Aggregate("", (current, value) => current + value switch
             {
                 null => "'', ",
                 string _ => $"'{value}', ",
@@ -46,6 +48,8 @@ namespace RFI.MicroserviceFramework._Api
                 DateTime _ => $"to_date('{value:dd/MM/yyyy HH:mm:ss}', 'dd/mm/yyyy hh24:mi:ss'), ",
                 _ => throw new ApiException("Unknown param type")
             });
+
+            if(parametersString.NotEmpty()) commandDebug += parametersString;
 
             var resultList = new List<T>();
 
@@ -74,7 +78,9 @@ namespace RFI.MicroserviceFramework._Api
 
                                 var value = reader.GetValue(reader.GetOrdinal(propertyInfo.Name.ToUpper())).ToString();
 
-                                /*switch(propertyTypeName)
+                                object obj;
+
+                                switch(propertyTypeName)
                                 {
                                     case "String":
                                         obj = value;
@@ -93,7 +99,7 @@ namespace RFI.MicroserviceFramework._Api
                                         obj = resultLong;
                                         break;
                                     case "Decimal":
-                                        decimal.TryParse(value.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
+                                        decimal.TryParse(value.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
                                         obj = resultDecimal;
                                         break;
                                     case "DateTime":
@@ -102,19 +108,7 @@ namespace RFI.MicroserviceFramework._Api
                                         break;
                                     default:
                                         throw new ApiException("Unknown param type");
-                                }*/
-
-                                var obj = propertyTypeName switch
-                                {
-                                    "String" => (object)value,
-                                    "Boolean" => bool.Parse(value),
-                                    "Int32" => int.Parse(value),
-                                    "Int64" => int.Parse(value),
-                                    "Long" => long.Parse(value),
-                                    "Decimal" => decimal.Parse(value.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                    "DateTime" => DateTime.Parse(value),
-                                    _ => throw new ApiException("Unknown param type")
-                                };
+                                }
 
                                 propertyInfo.SetValue(outParams, obj);
                             }
@@ -124,7 +118,7 @@ namespace RFI.MicroserviceFramework._Api
                     }
                     catch(OracleException ex)
                     {
-                        ProcessOracleException(ex);
+                        ProcessOracleException(ex, commandDebug);
                     }
 
                     cmd.Dispose();
@@ -134,7 +128,6 @@ namespace RFI.MicroserviceFramework._Api
                 connection.Dispose();
             }
 
-
             return resultList;
         }
 
@@ -143,6 +136,8 @@ namespace RFI.MicroserviceFramework._Api
         {
             using var connection = new OracleConnection(SEnv.OracleCS);
             connection.Open();
+
+            var commandDebug = PackageName + "." + procedureName;
 
             using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
@@ -163,7 +158,7 @@ namespace RFI.MicroserviceFramework._Api
             }
             catch(OracleException ex)
             {
-                ProcessOracleException(ex);
+                ProcessOracleException(ex, commandDebug);
             }
 
             // read out params
@@ -171,16 +166,34 @@ namespace RFI.MicroserviceFramework._Api
             {
                 var prmStr = cmd.Parameters[propertyInfo.Name].Value.ToString();
 
-                var obj = response.GetPropValue(propertyInfo.Name) switch
+                object obj;
+                switch(response.GetPropValue(propertyInfo.Name))
                 {
-                    null => (object)(prmStr == "null" ? "" : prmStr),
-                    string _ => (prmStr == "null" ? "" : prmStr),
-                    int _ => int.Parse(prmStr),
-                    long _ => long.Parse(prmStr),
-                    decimal _ => decimal.Parse(prmStr.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                    DateTime _ => DateTime.Parse(prmStr),
-                    _ => throw new ApiException("Unknown param type")
-                };
+                    case null:
+                        obj = prmStr == "null" ? "" : prmStr;
+                        break;
+                    case string _:
+                        obj = prmStr == "null" ? "" : prmStr;
+                        break;
+                    case int _:
+                        int.TryParse(prmStr, out var resultInt);
+                        obj = resultInt;
+                        break;
+                    case long _:
+                        long.TryParse(prmStr, out var resultLong);
+                        obj = resultLong;
+                        break;
+                    case decimal _:
+                        decimal.TryParse(prmStr.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
+                        obj = resultDecimal;
+                        break;
+                    case DateTime _:
+                        DateTime.TryParse(prmStr, out var resultDateTime);
+                        obj = resultDateTime;
+                        break;
+                    default:
+                        throw new ApiException("Unknown param type");
+                }
 
                 propertyInfo.SetValue(response, obj);
             }
@@ -214,7 +227,7 @@ namespace RFI.MicroserviceFramework._Api
                 }
                 catch(OracleException ex)
                 {
-                    ProcessOracleException(ex);
+                    ProcessOracleException(ex, cmd.CommandText);
                 }
             }
 
@@ -245,9 +258,9 @@ namespace RFI.MicroserviceFramework._Api
         }
 
 
-        private static void ProcessOracleException(OracleException ex)
+        private static void ProcessOracleException(OracleException ex, string commandDebug)
         {
-            ex.Log();
+            ex.Log(commandDebug);
 
             if(ex.Number > 20100 && ex.Number < 20200) throw new ApiException((CodeStatus)(ex.Number - 20100));
 

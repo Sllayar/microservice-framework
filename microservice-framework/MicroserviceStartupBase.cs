@@ -6,13 +6,15 @@ using RFI.MicroserviceFramework._Loggers;
 
 // ReSharper disable All
 
-namespace RFI.MicroserviceFramework
+namespace RFI
 {
-    public class Startup
+    public class MicroserviceStartupBase
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            services
+                .AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
         }
 
         public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime)
@@ -20,22 +22,30 @@ namespace RFI.MicroserviceFramework
             app.UseMetricServer();
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+
             lifetime.ApplicationStarted.Register(OnStarted);
+            lifetime.ApplicationStarted.Register(OnMicroserviceStarted);
+
             lifetime.ApplicationStopping.Register(OnShutdown);
+            lifetime.ApplicationStopping.Register(OnMicroserviceShutdown);
         }
 
-        private static void OnStarted()
+        private static void OnMicroserviceStarted()
         {
             Logger.Log(true, "Microservice started");
-
-            MicroserviceFramework.Settings.OnStarted();
         }
 
-        private static void OnShutdown()
+        private static void OnMicroserviceShutdown()
         {
-            MicroserviceFramework.Settings.OnShutdown();
-
             Logger.Log(true, "Microservice is shutting down");
+        }
+
+        public virtual void OnStarted()
+        {
+        }
+
+        public virtual void OnShutdown()
+        {
         }
     }
 }
