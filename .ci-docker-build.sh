@@ -26,7 +26,7 @@ elif [[ $JOB_STAGE == "deploy-pre-production" ]]; then
 tee $DOCKERFILE > /dev/null << ---
 FROM dist.hosts.rfi:5000/dotnet/core/sdk:3.1-alpine
 COPY / /src
-RUN dotnet publish /src/${PROJECT_NAME} -c Release -o /app \
+RUN dotnet publish /src/${PROJECT_NAME} -c Release
 RUN dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.nupkg --source http://dist.hosts.rfi:5555 --skip-duplicate \
  && dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.snupkg --source http://dist.hosts.rfi:5555 --skip-duplicate
 ---
@@ -42,7 +42,7 @@ elif [[ $JOB_STAGE == "deploy-production" ]]; then
 tee $DOCKERFILE > /dev/null << ---
 FROM dist.hosts.rfi:5000/dotnet/core/sdk:3.1-alpine
 COPY / /src
-RUN dotnet publish /src/${PROJECT_NAME} -c Release -o /app \
+RUN dotnet publish /src/${PROJECT_NAME} -c Release
 RUN dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.nupkg --source http://dist.hosts.rfi:5555 --skip-duplicate \
  && dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.snupkg --source http://dist.hosts.rfi:5555 --skip-duplicate
 ---
