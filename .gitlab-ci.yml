@@ -12,7 +12,8 @@ before_script:
 
 stages:
   - build
-  - deploy
+  - deploy-pre-production
+  - deploy-production
 
 build:
   stage: build
@@ -30,4 +31,4 @@ deploy_production:
   when: manual
   script:
     - sh .ci-docker-build.sh $CI_JOB_STAGE $CI_PROJECT_NAME $CI_PROJECT_DIR $CI_PIPELINE_ID
-    
+  
