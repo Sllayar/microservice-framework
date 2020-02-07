@@ -1,4 +1,5 @@
-﻿namespace RFI.MicroserviceFramework._Api.Controllers.service
+﻿// ReSharper disable All
+namespace RFI.MicroserviceFramework._Api.Controllers.service
 {
     public class ServiceRequest : ApiRequest
     {

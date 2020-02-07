@@ -6,7 +6,7 @@ namespace RFI.MicroserviceFramework._Helpers
     {
         public static decimal ToDecimal(this string source)
         {
-            decimal.TryParse(source.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result);
+            decimal.TryParse(source.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result);
             return result;
         }
     }
