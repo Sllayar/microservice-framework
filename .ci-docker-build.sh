@@ -9,7 +9,6 @@ DOCKERFILE="/${PROJECT_DIR}/Dockerfile"
 
 if [[ $JOB_STAGE == "build" ]]; then
 
-# builder
 tee $DOCKERFILE > /dev/null << ---
 FROM dist.hosts.rfi:5000/dotnet/core/sdk:3.1-alpine
 COPY / /src
@@ -22,10 +21,9 @@ docker build /${PROJECT_DIR} \
 docker push dist.hosts.rfi:5000/${PROJECT_NAME}:builder || exit 1
 
 
-elif [[ $JOB_STAGE == "deploy" ]]; then
+elif [[ $JOB_STAGE == "deploy-pre-production" ]]; then
 
-# deploy
-tee -a $DOCKERFILE > /dev/null << ---
+tee $DOCKERFILE > /dev/null << ---
 FROM dist.hosts.rfi:5000/dotnet/core/sdk:3.1-alpine
 COPY / /src
 RUN dotnet publish /src/${PROJECT_NAME} -c Release -o /app \
@@ -34,6 +32,23 @@ RUN dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.nupkg --source http://d
 ---
 docker pull dist.hosts.rfi:5000/${PROJECT_NAME}:builder || true
 docker build /${PROJECT_DIR} --cache-from dist.hosts.rfi:5000/${PROJECT_NAME}:builder
+
+fi
+docker push dist.hosts.rfi:5000/${PROJECT_NAME}:builder || exit 1
+
+
+elif [[ $JOB_STAGE == "deploy-production" ]]; then
+
+tee $DOCKERFILE > /dev/null << ---
+FROM dist.hosts.rfi:5000/dotnet/core/sdk:3.1-alpine
+COPY / /src
+RUN dotnet publish /src/${PROJECT_NAME} -c Release -o /app \
+RUN dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.nupkg --source http://dist.hosts.rfi:5555 --skip-duplicate \
+ && dotnet nuget push /src/${PROJECT_NAME}/bin/Release/*.snupkg --source http://dist.hosts.rfi:5555 --skip-duplicate
+---
+docker pull dist.hosts.rfi:5000/${PROJECT_NAME}:builder || true
+docker build /${PROJECT_DIR} --cache-from dist.hosts.rfi:5000/${PROJECT_NAME}:builder
+
 
 fi
 
