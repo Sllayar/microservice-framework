@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ServerGarbageCollection>false</ServerGarbageCollection>
-    <Version>1.4.5</Version>
+    <Version>1.4.6</Version>
     <Company>RFI Bank</Company>
     <Authors>Golinski Alexey</Authors>
     <Product>MicroserviceFramework</Product>
@@ -33,4 +33,8 @@
     <PackageReference Include="VaultSharp" Version="0.11.1002" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 </Project>
