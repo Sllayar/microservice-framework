@@ -99,7 +99,7 @@ namespace RFI.MicroserviceFramework._Api
                                         obj = resultLong;
                                         break;
                                     case "Decimal":
-                                        decimal.TryParse(value.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
+                                        decimal.TryParse(value.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
                                         obj = resultDecimal;
                                         break;
                                     case "DateTime":
@@ -127,7 +127,6 @@ namespace RFI.MicroserviceFramework._Api
                 connection.Close();
                 connection.Dispose();
             }
-
 
             return resultList;
         }
@@ -185,7 +184,7 @@ namespace RFI.MicroserviceFramework._Api
                         obj = resultLong;
                         break;
                     case decimal _:
-                        decimal.TryParse(prmStr.Replace(",", "."), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
+                        decimal.TryParse(prmStr.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
                         obj = resultDecimal;
                         break;
                     case DateTime _:
