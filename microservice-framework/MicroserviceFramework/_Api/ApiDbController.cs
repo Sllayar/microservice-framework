@@ -35,6 +35,8 @@ namespace RFI.MicroserviceFramework._Api
 
         public static List<T> ExecSelect<T>(string tableName, bool usePackage, object request) where T : new()
         {
+            var commandDebug = (usePackage ? PackageName + "." : "") + tableName;
+
             var parametersString = GetParams(request).Select(i => i.Value).Aggregate("", (current, value) => current + value switch
             {
                 null => "'', ",
@@ -46,6 +48,8 @@ namespace RFI.MicroserviceFramework._Api
                 DateTime _ => $"to_date('{value:dd/MM/yyyy HH:mm:ss}', 'dd/mm/yyyy hh24:mi:ss'), ",
                 _ => throw new ApiException("Unknown param type")
             });
+
+            if(parametersString.NotEmpty()) commandDebug += parametersString;
 
             var resultList = new List<T>();
 
@@ -114,7 +118,7 @@ namespace RFI.MicroserviceFramework._Api
                     }
                     catch(OracleException ex)
                     {
-                        ProcessOracleException(ex);
+                        ProcessOracleException(ex, commandDebug);
                     }
 
                     cmd.Dispose();
@@ -133,6 +137,8 @@ namespace RFI.MicroserviceFramework._Api
         {
             using var connection = new OracleConnection(SEnv.OracleCS);
             connection.Open();
+
+            var commandDebug = PackageName + "." + procedureName;
 
             using var cmd = connection.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
@@ -153,7 +159,7 @@ namespace RFI.MicroserviceFramework._Api
             }
             catch(OracleException ex)
             {
-                ProcessOracleException(ex);
+                ProcessOracleException(ex, commandDebug);
             }
 
             // read out params
@@ -204,7 +210,7 @@ namespace RFI.MicroserviceFramework._Api
                 }
                 catch(OracleException ex)
                 {
-                    ProcessOracleException(ex);
+                    ProcessOracleException(ex, cmd.CommandText);
                 }
             }
 
@@ -235,9 +241,9 @@ namespace RFI.MicroserviceFramework._Api
         }
 
 
-        private static void ProcessOracleException(OracleException ex)
+        private static void ProcessOracleException(OracleException ex, string commandDebug)
         {
-            ex.Log();
+            ex.Log(commandDebug);
 
             if(ex.Number > 20100 && ex.Number < 20200) throw new ApiException((CodeStatus)(ex.Number - 20100));
 
