@@ -40,7 +40,7 @@ namespace RFI.MicroserviceFramework._Api
             {
                 var exception = ex.InnerException ?? ex;
 
-                exception.Log();
+                exception.Log(ApiRequest?.Request_ID.ToString());
 
                 if(exception is ApiException apiException) ApiResponse.SetStatus(apiException.Code, apiException.Detail);
                 else ApiResponse.SetStatus(CodeStatus.UnhandledException);
