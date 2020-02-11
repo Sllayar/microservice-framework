@@ -11,6 +11,6 @@ namespace RFI.MicroserviceFramework._Helpers
             return request.Headers[header];
         }
 
-        public static decimal GetApiVersion(this HttpRequest httpRequest) => httpRequest.GetHeaderValue("api-version").ToDecimal();
+        public static decimal GetApiVersion(this HttpRequest httpRequest) => httpRequest.GetHeaderValue("api-version").ParseDecimal();
     }
 }

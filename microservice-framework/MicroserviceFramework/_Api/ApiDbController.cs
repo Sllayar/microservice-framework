@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using Oracle.ManagedDataAccess.Client;
 using RFI.MicroserviceFramework._Environment;
@@ -78,37 +77,17 @@ namespace RFI.MicroserviceFramework._Api
 
                                 var value = reader.GetValue(reader.GetOrdinal(propertyInfo.Name.ToUpper())).ToString();
 
-                                object obj;
-
-                                switch(propertyTypeName)
+                                var obj = propertyTypeName switch
                                 {
-                                    case "String":
-                                        obj = value;
-                                        break;
-                                    case "Boolean":
-                                        bool.TryParse(value, out var resultBool);
-                                        obj = resultBool;
-                                        break;
-                                    case "Int32":
-                                    case "Int64":
-                                        int.TryParse(value, out var resultInt);
-                                        obj = resultInt;
-                                        break;
-                                    case "Long":
-                                        long.TryParse(value, out var resultLong);
-                                        obj = resultLong;
-                                        break;
-                                    case "Decimal":
-                                        decimal.TryParse(value.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
-                                        obj = resultDecimal;
-                                        break;
-                                    case "DateTime":
-                                        DateTime.TryParse(value, out var resultDateTime);
-                                        obj = resultDateTime;
-                                        break;
-                                    default:
-                                        throw new ApiException("Unknown param type");
-                                }
+                                    "String" => (object)value,
+                                    "Boolean" => value.ParseBool(),
+                                    "Int32" => value.ParseInt(),
+                                    "Int64" => value.ParseInt(),
+                                    "Long" => value.ParseLong(),
+                                    "Decimal" => value.ParseDecimal(),
+                                    "DateTime" => value.ParseDateTime(),
+                                    _ => throw new ApiException("Unknown param type")
+                                };
 
                                 propertyInfo.SetValue(outParams, obj);
                             }
@@ -166,34 +145,16 @@ namespace RFI.MicroserviceFramework._Api
             {
                 var prmStr = cmd.Parameters[propertyInfo.Name].Value.ToString();
 
-                object obj;
-                switch(response.GetPropValue(propertyInfo.Name))
+                var obj = response.GetPropValue(propertyInfo.Name) switch
                 {
-                    case null:
-                        obj = prmStr == "null" ? "" : prmStr;
-                        break;
-                    case string _:
-                        obj = prmStr == "null" ? "" : prmStr;
-                        break;
-                    case int _:
-                        int.TryParse(prmStr, out var resultInt);
-                        obj = resultInt;
-                        break;
-                    case long _:
-                        long.TryParse(prmStr, out var resultLong);
-                        obj = resultLong;
-                        break;
-                    case decimal _:
-                        decimal.TryParse(prmStr.Replace(",", "."), NumberStyles.Float | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var resultDecimal);
-                        obj = resultDecimal;
-                        break;
-                    case DateTime _:
-                        DateTime.TryParse(prmStr, out var resultDateTime);
-                        obj = resultDateTime;
-                        break;
-                    default:
-                        throw new ApiException("Unknown param type");
-                }
+                    null => (object)(prmStr == "null" ? "" : prmStr),
+                    string _ => (prmStr == "null" ? "" : prmStr),
+                    int _ => prmStr.ParseInt(),
+                    long _ => prmStr.ParseLong(),
+                    decimal _ => prmStr.ParseDecimal(),
+                    DateTime _ => prmStr.ParseDateTime(),
+                    _ => throw new ApiException("Unknown param type")
+                };
 
                 propertyInfo.SetValue(response, obj);
             }
