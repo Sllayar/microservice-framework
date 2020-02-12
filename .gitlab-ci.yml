@@ -1,5 +1,4 @@
-#image: dist.hosts.rfi:5000/dind:kub
-image: docker:latest
+image: dist.hosts.rfi:5000/dind:kub
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
