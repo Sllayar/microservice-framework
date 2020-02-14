@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using RFI.MicroserviceFramework._Helpers;
 
+// ReSharper disable All
+
 namespace RFI.MicroserviceFramework._Api
 {
     internal class ApiHealthItem
