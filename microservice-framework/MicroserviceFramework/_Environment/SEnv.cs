@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using RFI.MicroserviceFramework._Api.Controllers._health;
+using RFI.MicroserviceFramework._Api;
 using RFI.MicroserviceFramework._Loggers;
 
 namespace RFI.MicroserviceFramework._Environment
@@ -16,7 +16,7 @@ namespace RFI.MicroserviceFramework._Environment
             }
             catch(Exception ex)
             {
-                Healthes.Set("env", false);
+                ApiHealth.Set("env", false);
                 ex.Log();
             }
         }
