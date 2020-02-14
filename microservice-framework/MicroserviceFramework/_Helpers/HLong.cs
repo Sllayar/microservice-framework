@@ -1,4 +1,6 @@
-﻿namespace RFI.MicroserviceFramework._Helpers
+﻿// ReSharper disable All
+
+namespace RFI.MicroserviceFramework._Helpers
 {
     public static class HLong
     {
