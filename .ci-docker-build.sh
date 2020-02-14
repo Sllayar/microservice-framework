@@ -6,7 +6,6 @@ PROJECT_DIR=${3}
 PIPELINE_ID=${4}
 DOCKERFILE="/${PROJECT_DIR}/Dockerfile"
 
-
 if [[ $JOB_STAGE == "build" ]]; then
 
 tee $DOCKERFILE > /dev/null << ---

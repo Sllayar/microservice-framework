@@ -1,5 +1,7 @@
 ﻿using System;
 
+// ReSharper disable All
+
 namespace RFI.MicroserviceFramework._Helpers
 {
     public static class HDateTime
