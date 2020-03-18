@@ -11,15 +11,11 @@ namespace RFI.MicroserviceFramework._Api
     {
         public string Name { get; set; }
 
-        private bool? result;
+        private bool? result = null;
+
         public bool Result
         {
-            get
-            {
-                if(result.NotNull()) return result == true;
-                if(Timeout.NotNull()) return (DateTime.Now - LastCheck).TotalMilliseconds > Timeout;
-                return true;
-            }
+            get => result != null ? result == true : (int)(DateTime.Now - LastCheck).TotalMilliseconds < Timeout;
             set => result = value;
         }
 
@@ -46,6 +42,16 @@ namespace RFI.MicroserviceFramework._Api
             HealthItems[name].Timeout = timeout;
         }
 
-        internal static IEnumerable<string> Check() => HealthItems.Where(item => item.Value.Result.Not()).Select(item => item.Value.Name);
+        private delegate void HealthChecks();
+
+        private static HealthChecks RunHealthChecks;
+        public static void AddHealthCheck(Action healthCheckAction) => RunHealthChecks += () => healthCheckAction();
+
+        internal static bool Check(out IEnumerable<string> fails)
+        {
+            RunHealthChecks();
+            fails = HealthItems.Where(item => item.Value.Result.Not()).Select(item => item.Value.Name);
+            return fails.Any().Not();
+        }
     }
 }
