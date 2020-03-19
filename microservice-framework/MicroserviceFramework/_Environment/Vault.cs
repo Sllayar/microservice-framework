@@ -2,11 +2,7 @@
 using System.IO;
 using RFI.MicroserviceFramework._Helpers;
 using VaultSharp;
-using VaultSharp.V1.AuthMethods;
 using VaultSharp.V1.AuthMethods.Kubernetes;
-using VaultSharp.V1.AuthMethods.LDAP;
-
-// ReSharper disable All
 
 namespace RFI.MicroserviceFramework._Environment
 {
@@ -19,19 +15,15 @@ namespace RFI.MicroserviceFramework._Environment
                 SEnv.Get("VAULT_SERVICE_URL"),
                 SEnv.Get("VAULT_MOUNT_POINT"),
                 SEnv.Get("VAULT_PATH"),
-                SEnv.Get("VAULT_ROLE"),
-                SEnv.Get("VAULT_LDAP_USER").Base64Decode(),
-                SEnv.Get("VAULT_LDAP_PASS").Base64Decode()
+                SEnv.Get("VAULT_ROLE")
             );
         }
 
-        private static void LoadToEnvironment(string kuberJwtPath, string serviceUrl, string mountPoint, string path, string role, string ldapUser, string ldapPass)
+        private static void LoadToEnvironment(string kuberJwtPath, string serviceUrl, string mountPoint, string path, string role)
         {
             if(SEnv.Get("VaultInited").NotEmpty()) return;
 
-            var authMethod = SEnv.IsDebug ? new LDAPAuthMethodInfo(ldapUser, ldapPass) as IAuthMethodInfo : new KubernetesAuthMethodInfo(mountPoint, role, File.ReadAllText(kuberJwtPath)) as IAuthMethodInfo;
-
-            var vaultClientSettings = new VaultClientSettings(serviceUrl, authMethod);
+            var vaultClientSettings = new VaultClientSettings(serviceUrl, new KubernetesAuthMethodInfo(mountPoint, role, File.ReadAllText(kuberJwtPath)));
             vaultClientSettings.PostProcessHttpClientHandlerAction += handler => handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
             IVaultClient vaultClient = new VaultClient(vaultClientSettings);
 
