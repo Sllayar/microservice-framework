@@ -15,7 +15,7 @@ namespace RFI.MicroserviceFramework._Environment
         {
             try
             {
-                if(IsTests.Not()) Vault.Init();
+                if(IsDebug.Not() && IsTests.Not()) Vault.Init();
             }
             catch(Exception ex)
             {
