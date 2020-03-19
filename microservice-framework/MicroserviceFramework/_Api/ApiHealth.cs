@@ -43,13 +43,12 @@ namespace RFI.MicroserviceFramework._Api
         }
 
         private delegate void HealthChecks();
-
         private static HealthChecks RunHealthChecks;
         public static void AddHealthCheck(Action healthCheckAction) => RunHealthChecks += () => healthCheckAction();
 
         internal static bool Check(out IEnumerable<string> fails)
         {
-            RunHealthChecks();
+            if(RunHealthChecks.NotNull()) RunHealthChecks();
             fails = HealthItems.Where(item => item.Value.Result.Not()).Select(item => item.Value.Name);
             return fails.Any().Not();
         }

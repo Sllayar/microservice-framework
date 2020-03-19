@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ServerGarbageCollection>false</ServerGarbageCollection>
-    <Version>1.5.3</Version>
+    <Version>1.5.4</Version>
     <Company>RFI Bank</Company>
     <Authors>Golinski Alexey</Authors>
     <Product>MicroserviceFramework</Product>
