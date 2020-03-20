@@ -11,11 +11,9 @@ namespace RFI.MicroserviceFramework._Api.Controllers._health
     public class HealthController : ControllerBase
     {
         [HttpGet]
-        public string HealthProbe(string probe = "health")
+        public string HealthProbe(string probe = "manual")
         {
-            var fails = ApiHealth.Check();
-
-            var success = fails.Any().Not();
+            var success = ApiHealth.Check(out var fails);
 
             SMetrics.CounterHealthCheck.Inc(success);
 

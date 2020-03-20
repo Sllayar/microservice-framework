@@ -7,8 +7,6 @@ namespace RFI.MicroserviceFramework._Cache
 {
     public static class MemCache
     {
-        //public static IMemoryCache MemoryCache;
-
         public static readonly MemoryCache MemoryCache = new MemoryCache(new MemoryCacheOptions());
 
         public static void Save(string key, string value, TimeSpan offset) => MemoryCache.Set(key, value, new MemoryCacheEntryOptions().SetSlidingExpiration(offset));
