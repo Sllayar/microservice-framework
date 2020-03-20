@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Xml;
 
 // ReSharper disable All
 
@@ -66,20 +65,9 @@ namespace RFI.MicroserviceFramework._Helpers
         }
 
         // удалить массив вхождений
-        public static string Remove(this string str, IEnumerable<string> oldChars) => oldChars.Aggregate(str, (current, oldChar) => current.Remove(oldChar));
-
-        // удаляет невалидные для XML символы
-        public static string RemoveInvalidXmlChars(this string str)
-        {
-            try
-            {
-                return new string(str.Where(XmlConvert.IsXmlChar).ToArray());
-            }
-            catch
-            {
-                return str;
-            }
-        }
+        public static string Remove(this string str, params string[] oldChars) => oldChars.Aggregate(str, (current, oldChar) => current.Remove(oldChar));
+        
+        public static string Remove(this string str, params char[] oldChars) => oldChars.Aggregate(str, (current, oldChar) => current.Remove(oldChar));
 
         // заменить множество строк
         public static string Replace(this string str, IEnumerable<string> oldStrings, string newChar) => oldStrings.Aggregate(str, (current, oldChar) => current.Replace(oldChar, newChar));
@@ -99,132 +87,57 @@ namespace RFI.MicroserviceFramework._Helpers
 
         // сравниваем строки, приводя их к нижнему регистру
         public static bool CompareIgnoreCase(this string str1, string str2) => string.Equals(str1, str2, StringComparison.CurrentCultureIgnoreCase);
-
-
-        public static bool CompareIgnoreCase(this string str1, IEnumerable<string> values) => values.Any(str1.CompareIgnoreCase);
+        
+        public static bool CompareIgnoreCaseAny(this string str1, params string[] items) => items.Any(str1.CompareIgnoreCase);
 
 
         // равен одному из
-        public static bool EqualsOneOf(this string str, IEnumerable<string> items) => items.Any(str.Equals);
-
+        public static bool EqualsAny(this string str, params string[] items) => items.Any(str.Equals);
 
         // не содержит
         public static bool NotContains(this string str, string value) => str.Contains(value).Not();
 
         // содержит один из
-        public static bool Contains(this string str, IEnumerable<string> items) => items.Any(str.Contains);
-
-        // не содержит ни одного из
-        public static bool NotContains(this string str, IEnumerable<string> items) => str.Contains(items).Not();
-
+        public static bool ContainsAny(this string str, params string[] items) => items.Any(str.Contains);
+        
         // количество вхождений подстроки
         public static int SubstrCount(this string str, string needle) => (str.Length - str.Replace(needle, "").Length) / needle.Length;
 
         // заканчивается на
-        public static bool EndsWith(this string str, IEnumerable<string> items) => items.Any(str.EndsWith);
+        public static bool EndsWithAny(this string str, params string[] items) => items.Any(str.EndsWith);
 
 
         // первая буква большая
-        public static string FUcase(this string str)
-        {
-            try
-            {
-                return str[0].ToString().ToUpper() + str.Substring(1);
-            }
-            catch
-            {
-                return str;
-            }
-        }
+        public static string FUcase(this string str) => str.IsNullOrEmpty(true) ? str : str[0].ToString().ToUpper() + str.Substring(1);
 
         // первая буква большая
-        public static string FUcaseEachWord(this string str)
-        {
-            try
-            {
-                if(str.IsNullOrEmpty()) return str;
-
-                var words = str.Split(' ');
-                var ans = words.Aggregate("", (current, word) => current + word.FUcase() + " ");
-
-                return ans.Trim();
-            }
-            catch
-            {
-                return str;
-            }
-        }
+        public static string FUcaseEachWord(this string str) => str.IsNullOrEmpty(true) ? str : str.Split(' ').Aggregate("", (current, word) => current + word.FUcase() + " ").Trim();
 
 
         // первая буква маленькая
         public static string FLcase(this string word) => word[0].ToString().ToLower() + word.Substring(1);
 
         // заменяет только первое вхождение
-        public static string FReplace(this string text, string oldChar, string newChar)
+        public static string FReplace(this string text, string oldStr, string newStr)
         {
-            try
-            {
-                var f1 = text.IndexOf(oldChar, StringComparison.Ordinal);
-                text = text.Remove(f1, oldChar.Length);
-                return text.Insert(f1, newChar);
-            }
-            catch
-            {
-                return text;
-            }
+            var f1 = text.IndexOf(oldStr, StringComparison.Ordinal);
+            text = text.Remove(f1, oldStr.Length);
+            return text.Insert(f1, newStr);
         }
 
 
         // транслит
         public static string Translit(this string str, string separator = " ")
         {
-            if(str.IsNullOrEmpty()) return str;
-
-            str = str
-                .ToLower()
-                .Replace("-", " ")
-                .RegexReplace("  +", " ")
-                .Remove(new[] { ",", ".", ";", "…", "—", "_", "«", "»", "!", "?", "№", "*", "`", "=", "%", "+", "/", @"\", "|", ":", "(", ")", "'", "[", "]", "<", ">", "&", "·", "#", "©", "^", "@", "$", "\"" })
-                .Trim()
-                .Replace("а", "a")
-                .Replace("б", "b")
-                .Replace("в", "v")
-                .Replace("г", "g")
-                .Replace("д", "d")
-                .Replace("е", "e")
-                .Replace("ё", "e")
-                .Replace("ж", "zh")
-                .Replace("з", "z")
-                .Replace("и", "i")
-                .Replace("й", "j")
-                .Replace("к", "k")
-                .Replace("л", "l")
-                .Replace("м", "m")
-                .Replace("н", "n")
-                .Replace("о", "o")
-                .Replace("п", "p")
-                .Replace("р", "r")
-                .Replace("с", "s")
-                .Replace("т", "t")
-                .Replace("у", "u")
-                .Replace("ф", "f")
-                .Replace("х", "h")
-                .Replace("ц", "c")
-                .Replace("ч", "ch")
-                .Replace("ш", "sh")
-                .Replace("щ", "sch")
-                .Replace("ъ", "")
-                .Replace("ы", "y")
-                .Replace("ь", "")
-                .Replace("э", "e")
-                .Replace("ю", "yu")
-                .Replace("я", "ya")
-                .Replace("ї", "j")
-                .Replace("є", "e")
-                .Replace("і", "i")
-                .Replace(" ", separator);
-
-            return str;
+            return str.IsNullOrEmpty()
+                ? str
+                : str
+                    .ToLower()
+                    .Replace("-", " ")
+                    .RegexReplace("  +", " ")
+                    .Remove(',', '.', ';', '…', '—', '_', '«', '»', '!', '?', '№', '*', '`', '=', '%', '+', '/', '\\', '|', ':', '(', ')', '\'', '[', ']', '<', '>', '&', '·', '#', '©', '^', '@', '$', '"')
+                    .Trim()
+                    .Replace(("а","a"),("б","b"),("в","v"),("г","g"),("д","d"),("е","e"),("ё","e"),("ж","zh"),("з","z"),("и","i"),("й","j"),("к","k"),("л","l"),("м","m"),("н","n"),("о","o"),("п","p"),("р","r"),("с","s"),("т","t"),("у","u"),("ф","f"),("х","h"),("ц","c"),("ч","ch"),("ш","sh"),("щ","sch"),("ъ",""),("ы","y"),("ь",""),("э","e"),("ю","yu"),("я","ya"),("ї","j"),("є","e"),("і","i"),("",separator));
         }
 
 
@@ -236,29 +149,9 @@ namespace RFI.MicroserviceFramework._Helpers
 
         public static string URLDecodeANSI(this string str) => HttpUtility.UrlDecode(str, Encoding.GetEncoding(1251));
 
-        public static string PunyEncode(this string str)
-        {
-            try
-            {
-                return new IdnMapping().GetAscii(str);
-            }
-            catch(Exception)
-            {
-                return str;
-            }
-        }
+        public static string PunyEncode(this string str) => new IdnMapping().GetAscii(str);
 
-        public static string PunyDecode(this string str)
-        {
-            try
-            {
-                return str.StartsWith("xn--") ? new IdnMapping().GetUnicode(str) : str;
-            }
-            catch(Exception)
-            {
-                return str;
-            }
-        }
+        public static string PunyDecode(this string str) => str.StartsWith("xn--") ? new IdnMapping().GetUnicode(str) : str;
 
 
         public static string MD5(this string str)
@@ -274,68 +167,52 @@ namespace RFI.MicroserviceFramework._Helpers
         // архивируем строку
         public static byte[] CompressString(this string str)
         {
-            try
+            var byteArray = new byte[0];
+            if(str.NotEmpty())
             {
-                var byteArray = new byte[0];
-                if(str.NotEmpty())
+                byteArray = Encoding.UTF8.GetBytes(str);
+                using var stream = new MemoryStream();
+                using(var gZipStream = new GZipStream(stream, CompressionMode.Compress))
                 {
-                    byteArray = Encoding.UTF8.GetBytes(str);
-                    using var stream = new MemoryStream();
-                    using(var gZipStream = new GZipStream(stream, CompressionMode.Compress))
-                    {
-                        gZipStream.Write(byteArray, 0, byteArray.Length);
+                    gZipStream.Write(byteArray, 0, byteArray.Length);
 
-                        gZipStream.Close();
-                        gZipStream.Dispose();
-                    }
-
-                    byteArray = stream.ToArray();
-
-                    stream.Close();
-                    stream.Dispose();
+                    gZipStream.Close();
+                    gZipStream.Dispose();
                 }
 
-                return byteArray;
+                byteArray = stream.ToArray();
+
+                stream.Close();
+                stream.Dispose();
             }
-            catch
-            {
-                return null;
-            }
+
+            return byteArray;
         }
 
         // разархивируем строку
         public static string DecompressString(this byte[] bytes)
         {
-            try
+            var resultString = string.Empty;
+            if(bytes.NotNull() && bytes.Length > 0)
             {
-                var resultString = string.Empty;
-                if(bytes.NotNull() && bytes.Length > 0)
+                using var memoryStream = new MemoryStream(bytes);
+                using(var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
                 {
-                    using var memoryStream = new MemoryStream(bytes);
-                    using(var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                    using(var streamReader = new StreamReader(gZipStream))
                     {
-                        using(var streamReader = new StreamReader(gZipStream))
-                        {
-                            resultString = streamReader.ReadToEnd();
+                        resultString = streamReader.ReadToEnd();
 
-                            streamReader.Close();
-                            streamReader.Dispose();
-                        }
-
-                        gZipStream.Close();
-                        gZipStream.Dispose();
+                        streamReader.Close();
+                        streamReader.Dispose();
                     }
-
-                    memoryStream.Close();
-                    memoryStream.Dispose();
+                    gZipStream.Close();
+                    gZipStream.Dispose();
                 }
+                memoryStream.Close();
+                memoryStream.Dispose();
+            }
 
-                return resultString;
-            }
-            catch
-            {
-                return "";
-            }
+            return resultString;
         }
 
 

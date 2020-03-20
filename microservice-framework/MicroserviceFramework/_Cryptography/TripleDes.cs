@@ -3,6 +3,8 @@ using System.IO;
 using System.Security.Cryptography;
 using RFI.MicroserviceFramework._Helpers;
 
+// ReSharper disable All
+
 namespace RFI.MicroserviceFramework._Cryptography
 {
     public class HTripleDesParameters
