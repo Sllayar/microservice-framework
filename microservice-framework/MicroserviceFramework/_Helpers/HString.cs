@@ -66,8 +66,6 @@ namespace RFI.MicroserviceFramework._Helpers
 
         // удалить массив вхождений
         public static string Remove(this string str, params string[] oldChars) => oldChars.Aggregate(str, (current, oldChar) => current.Remove(oldChar));
-        
-        public static string Remove(this string str, params char[] oldChars) => oldChars.Aggregate(str, (current, oldChar) => current.Remove(oldChar));
 
         // заменить множество строк
         public static string Replace(this string str, IEnumerable<string> oldStrings, string newChar) => oldStrings.Aggregate(str, (current, oldChar) => current.Replace(oldChar, newChar));
@@ -127,17 +125,63 @@ namespace RFI.MicroserviceFramework._Helpers
 
 
         // транслит
+        // транслит
         public static string Translit(this string str, string separator = " ")
         {
-            return str.IsNullOrEmpty()
-                ? str
-                : str
-                    .ToLower()
-                    .Replace("-", " ")
-                    .RegexReplace("  +", " ")
-                    .Remove(',', '.', ';', '…', '—', '_', '«', '»', '!', '?', '№', '*', '`', '=', '%', '+', '/', '\\', '|', ':', '(', ')', '\'', '[', ']', '<', '>', '&', '·', '#', '©', '^', '@', '$', '"')
-                    .Trim()
-                    .Replace(("а","a"),("б","b"),("в","v"),("г","g"),("д","d"),("е","e"),("ё","e"),("ж","zh"),("з","z"),("и","i"),("й","j"),("к","k"),("л","l"),("м","m"),("н","n"),("о","o"),("п","p"),("р","r"),("с","s"),("т","t"),("у","u"),("ф","f"),("х","h"),("ц","c"),("ч","ch"),("ш","sh"),("щ","sch"),("ъ",""),("ы","y"),("ь",""),("э","e"),("ю","yu"),("я","ya"),("ї","j"),("є","e"),("і","i"),("",separator));
+            if(str.IsNullOrEmpty()) return str;
+
+            str = str
+
+                .ToLower()
+
+                .Replace("-", " ")
+
+                .RegexReplace("  +", " ")
+
+                .Remove(new [] { ",", ".", ";", "…", "—", "_", "«", "»", "!", "?", "№", "*", "`", "=", "%", "+", "/", @"\", "|", ":", "(", ")", "'", "[", "]", "<", ">", "&", "·", "#", "©", "^", "@", "$", "\"" })
+
+                .Trim()
+
+                .Replace("а", "a")
+                .Replace("б", "b")
+                .Replace("в", "v")
+                .Replace("г", "g")
+                .Replace("д", "d")
+                .Replace("е", "e")
+                .Replace("ё", "e")
+                .Replace("ж", "zh")
+                .Replace("з", "z")
+                .Replace("и", "i")
+                .Replace("й", "j")
+                .Replace("к", "k")
+                .Replace("л", "l")
+                .Replace("м", "m")
+                .Replace("н", "n")
+                .Replace("о", "o")
+                .Replace("п", "p")
+                .Replace("р", "r")
+                .Replace("с", "s")
+                .Replace("т", "t")
+                .Replace("у", "u")
+                .Replace("ф", "f")
+                .Replace("х", "h")
+                .Replace("ц", "c")
+                .Replace("ч", "ch")
+                .Replace("ш", "sh")
+                .Replace("щ", "sch")
+                .Replace("ъ", "")
+                .Replace("ы", "y")
+                .Replace("ь", "")
+                .Replace("э", "e")
+                .Replace("ю", "yu")
+                .Replace("я", "ya")
+                .Replace("ї", "j")
+                .Replace("є", "e")
+                .Replace("і", "i")
+
+                .Replace(" ", separator);
+
+            return str;
         }
 
 
