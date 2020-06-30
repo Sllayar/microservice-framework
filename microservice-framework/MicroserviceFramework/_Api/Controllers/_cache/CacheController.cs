@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using RFI.MicroserviceFramework._Cache;
 using RFI.MicroserviceFramework._Loggers;
@@ -12,27 +10,27 @@ namespace RFI.MicroserviceFramework._Api.Controllers._cache
         public string Key { get; set; }
     }
 
-    [Route("CacheController")]
+    [Route("cache")]
     public class CacheController : ControllerBase
     {
         [HttpGet]
-        [Route("GetCaheCount")]
-        public ContentResult clearCache() => Content(MemCache.MemoryCache.Count.ToString());
+        [Route("count")]
+        public ContentResult GetCount() => Content(MemCache.MemoryCache.Count.ToString());
 
         [HttpGet]
-        [Route("clearAll")]
-        public ContentResult GetCacheValues()
+        [Route("clear")]
+        public ContentResult Clear()
         {
             try
             {
                 MemCache.Refresh();
 
-                Logger.Log(true, "Cache Clear", null, "clearCache/all");
+                Logger.Log(true, "Cache Clear", null, "cache/clear");
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "clearCache/DeleteValue fail",
-                    "RFI.MicroserviceFramework._Api.Controllers._cache.ClearByValue");
+                Logger.Log(ex, "cache/clear fail",
+                    "RFI.MicroserviceFramework._Api.Controllers._cache.Clear");
 
                 return Content(ex.ToString());
             }
@@ -41,7 +39,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._cache
         }
 
         [HttpPost]
-        [Route("DeleteValue")]
+        [Route("delete_value")]
         public ContentResult ClearByValue([FromBody]DeleteValueRequest Request)
         {
             try
@@ -55,7 +53,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._cache
             }
             catch (Exception ex)
             {
-                Logger.Log(ex, "clearCache/DeleteValue fail",
+                Logger.Log(ex, "delete_value fail",
                     "RFI.MicroserviceFramework._Api.Controllers._cache.ClearByValue");
 
                 return Content(ex.ToString());
