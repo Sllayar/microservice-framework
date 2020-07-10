@@ -11,6 +11,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._health
     public class HealthController : ControllerBase
     {
         [HttpGet]
+        [Route("HealthStandart")]
         public string Health()
         {
             HttpContext.Response.StatusCode = 200;
@@ -18,7 +19,6 @@ namespace RFI.MicroserviceFramework._Api.Controllers._health
         }
 
         [HttpGet]
-        [Route("HealthProbe")]
         public string HealthProbe(string probe = "manual")
         {
             bool success = ApiHealth.Check(out var fails);
