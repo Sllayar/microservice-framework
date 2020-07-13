@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using RFI.MicroserviceFramework._Helpers;
@@ -27,17 +28,18 @@ namespace RFI.MicroserviceFramework._Api
 
     public static class ApiHealth
     {
-        private static readonly Dictionary<string, ApiHealthItem> HealthItems = new Dictionary<string, ApiHealthItem>();
+        private static readonly ConcurrentDictionary<string, ApiHealthItem> HealthItems = 
+            new ConcurrentDictionary<string, ApiHealthItem>();
 
         public static void Set(string name, bool result)
         {
-            if(HealthItems.ContainsKey(name).Not()) HealthItems.Add(name, new ApiHealthItem { Name = name });
+            if(HealthItems.ContainsKey(name).Not()) HealthItems.TryAdd(name, new ApiHealthItem { Name = name });
             HealthItems[name].Result = result;
         }
 
         public static void Set(string name, DateTime lastCheck, int timeout)
         {
-            if(HealthItems.ContainsKey(name).Not()) HealthItems.Add(name, new ApiHealthItem { Name = name });
+            if(HealthItems.ContainsKey(name).Not()) HealthItems.TryAdd(name, new ApiHealthItem { Name = name });
             HealthItems[name].LastCheck = lastCheck;
             HealthItems[name].Timeout = timeout;
         }
