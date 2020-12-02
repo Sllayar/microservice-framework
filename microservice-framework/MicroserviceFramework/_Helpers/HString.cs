@@ -14,7 +14,7 @@ namespace RFI.MicroserviceFramework._Helpers
 {
     public static class HString
     {
-        public static bool IsNullOrEmpty(this string str, bool trim = false) => string.IsNullOrEmpty(trim && str.NotNull() ? str.Trim() : str);
+        public static bool IsNullOrEmpty(this string str, bool trim = false) => string.IsNullOrEmpty((trim && str.NotNull()) ? str.Trim() : str);
 
         public static bool NotEmpty(this string str, bool trim = false) => str.IsNullOrEmpty(trim).Not();
 

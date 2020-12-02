@@ -13,10 +13,12 @@ namespace RFI.MicroserviceFramework._Api.Controllers._cache
     [Route("cache")]
     public class CacheController : ControllerBase
     {
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         [Route("count")]
         public ContentResult GetCount() => Content(MemCache.MemoryCache.Count.ToString());
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         [Route("clear")]
         public ContentResult Clear()
@@ -38,6 +40,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._cache
             return Content("Success");
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPost]
         [Route("delete_value")]
         public ContentResult ClearByValue([FromBody]DeleteValueRequest Request)
