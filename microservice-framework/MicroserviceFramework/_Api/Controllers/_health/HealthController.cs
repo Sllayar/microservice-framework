@@ -10,6 +10,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._health
     [Route("health/{probe}")]
     public class HealthController : ControllerBase
     {
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         [Route("HealthStandart")]
         public string Health()
@@ -18,6 +19,7 @@ namespace RFI.MicroserviceFramework._Api.Controllers._health
             return "Health check success";
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         public string HealthProbe(string probe = "manual")
         {
