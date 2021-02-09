@@ -259,6 +259,16 @@ namespace RFI.MicroserviceFramework._Helpers
             return resultString;
         }
 
+        public static string GetDigitsOnly(this string str)
+        {
+            string result = "";
+
+            for (int i = 0; i < str.Length; i++)
+                if (Char.IsDigit(str[i])) result += str[i];
+
+            return result;
+        }
+
 
         // BASE64
         public static string Base64Encode(this string str) => Convert.ToBase64String(Encoding.UTF8.GetBytes(str));
