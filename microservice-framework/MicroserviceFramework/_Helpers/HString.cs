@@ -259,6 +259,14 @@ namespace RFI.MicroserviceFramework._Helpers
             return resultString;
         }
 
+        public static bool IsDigits(this string str)
+        {
+            for (int i = 0; i < str.Length; i++)
+                if (Char.IsDigit(str[i]).Not()) return false;
+
+            return true;
+        }
+
         public static string GetDigitsOnly(this string str)
         {
             string result = "";
