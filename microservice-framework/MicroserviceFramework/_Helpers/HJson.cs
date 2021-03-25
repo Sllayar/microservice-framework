@@ -28,6 +28,8 @@ namespace RFI.MicroserviceFramework._Helpers
 
         public static void PopulateFromJson<T>(this T source, string json) => JsonConvert.PopulateObject(json, source);
 
+        public static void PopulateFromJson<T>(this T source, string json, JsonSerializerSettings settings) => JsonConvert.PopulateObject(json, source, settings);
+
 
         public static string ToMaskedJson<T>(this T obj)
         {
