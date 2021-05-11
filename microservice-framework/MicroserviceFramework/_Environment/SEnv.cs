@@ -32,7 +32,7 @@ namespace RFI.MicroserviceFramework._Environment
 
         public static string EnvironmentName => Get("ASPNETCORE_ENVIRONMENT");
 
-        public static bool IsDevelopment => EnvironmentName == "Development";
+        public static bool IsDevelopment => EnvironmentName == "Development" || EnvironmentName == "Local";
 
         public static readonly bool IsDebug = Debugger.IsAttached;
 
